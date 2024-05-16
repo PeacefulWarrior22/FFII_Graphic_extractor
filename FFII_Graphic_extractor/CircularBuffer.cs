@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 class CircularBuffer
 {
-    public static byte size;
+    public int size;
     public byte position;
     private byte[] buffer;
     public CircularBuffer()
@@ -14,7 +14,7 @@ class CircularBuffer
         size = 0;
         position = 0;
     }
-    public CircularBuffer(byte bufferSize)
+    public CircularBuffer(int bufferSize)
     {
         size = bufferSize;
         buffer = new byte[size];
@@ -22,7 +22,7 @@ class CircularBuffer
     }
     private void positionUpdate()
     {
-        if (position == size)
+        if (position == size - 1)
         {
             position = 0;
         }
@@ -36,11 +36,20 @@ class CircularBuffer
         buffer[position] = data;
         positionUpdate();
     }
+
     public void addSetBytes(byte[] data)
     {
         for (int i = 0; i < data.Length; i++)
         {
             buffer[position] = data[i];
+            positionUpdate();
+        }
+    }
+    public void byteRefresh(byte offset, byte length)
+    {
+        for (int i = 0; i < length; i++)
+        {
+            buffer[position] = buffer[offset - 1 + i];
             positionUpdate();
         }
     }
@@ -50,8 +59,15 @@ class CircularBuffer
     }
     public byte[] getSetBytes(byte offset, byte length)
     {
-        ArraySegment<byte> buffer = new ArraySegment<byte>(this.buffer, offset, length);
-        return buffer.ToArray();
+        //ArraySegment<byte> buffer = new ArraySegment<byte>(this.buffer, offset - 1, length);
+
+        byte[] buffer = new byte[length];
+        for (int i = 0; i < buffer.Length; i++)
+        {
+            buffer[i] = this.buffer[(offset + i) % (size - 1)];
+        }
+
+        return buffer;
     }
 }
 
