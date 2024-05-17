@@ -9,11 +9,7 @@ class CircularBuffer
     public int size;
     public byte position;
     private byte[] buffer;
-    public CircularBuffer()
-    {
-        size = 0;
-        position = 0;
-    }
+    
     public CircularBuffer(int bufferSize)
     {
         size = bufferSize;
@@ -37,14 +33,6 @@ class CircularBuffer
         positionUpdate();
     }
 
-    public void addSetBytes(byte[] data)
-    {
-        for (int i = 0; i < data.Length; i++)
-        {
-            buffer[position] = data[i];
-            positionUpdate();
-        }
-    }
     public void byteRefresh(byte offset, byte length)
     {
         for (int i = 0; i < length; i++)
@@ -59,7 +47,6 @@ class CircularBuffer
     }
     public byte[] getSetBytes(byte offset, byte length)
     {
-        //ArraySegment<byte> buffer = new ArraySegment<byte>(this.buffer, offset - 1, length);
 
         byte[] buffer = new byte[length];
         for (int i = 0; i < buffer.Length; i++)

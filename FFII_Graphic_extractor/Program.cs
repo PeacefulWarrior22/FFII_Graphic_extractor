@@ -36,7 +36,7 @@ class Program
 
     static void Main(String[] args)
     {
-        string compressedFilePath = "C:\\Users\\test\\Desktop\\title3";
+        string compressedFilePath = "C:\\Users\\test\\Desktop\\first_screen";
         string decompressedFilePath = "C:\\Users\\test\\Desktop\\out2.bin";
         CircularBuffer buffer = new CircularBuffer(0x100);
         CircularBuffer bitBuffer = new CircularBuffer(8);
@@ -44,7 +44,11 @@ class Program
         using (FileStream compStream = new FileStream(compressedFilePath, FileMode.Open))
         using (FileStream decompStream = new FileStream(decompressedFilePath, FileMode.Create))
         {
-            //first filling
+            byte[] header = new byte[8];
+            compStream.Read(header, 0, 8);
+            int decodedGraphicSize = Convert.ToInt16(Convert.ToString(header[7], 16) +
+                                                     Convert.ToString(header[6], 16), 16);
+
             bitUpdate(bitBuffer, compStream);
             byte[] byteBuilder = new byte[8];
 
@@ -82,7 +86,7 @@ class Program
                         decompStream.Flush();
                         break;
                 }
-            } while (compStream.Position < compStream.Length || bitPosition != 8);
+            } while (decompStream.Position != decodedGraphicSize);
         }
     }
 }
