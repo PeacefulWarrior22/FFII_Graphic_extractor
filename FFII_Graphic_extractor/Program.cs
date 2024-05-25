@@ -1,43 +1,42 @@
 ﻿using System.Text;
+using System.Linq;
+using System.Diagnostics.Metrics;
 
-class Program
+class Program : Coder
 {
-    static byte bitPosition = 0;
-    static void bitUpdate(CircularBuffer buffer, Stream streamBit)
+    static void strToByte(string str)
     {
-        byte bit = (byte)streamBit.ReadByte();
-        foreach (var item in Convert.ToString(bit, 2).PadLeft(8, '0'))
+        string _byte = "";
+        int i = 0;
+        foreach (char c in str)
         {
-            buffer.addByte(byte.Parse(item.ToString()));
+            _byte += c;
+            if (_byte.Length == 8)
+            {
+                Console.Write(Convert.ToString(Convert.ToInt32(_byte, 2), 16).PadLeft(2, '0') + " ");
+                _byte = "";
+                i++;
+            }
+            if (i == 16)
+            {
+                Console.WriteLine();
+                i = 0;
+            }
         }
     }
-
-    static byte readBit(CircularBuffer buffer, FileStream stream)
-    {
-        if (bitPosition == buffer.size)
-        {
-            bitPosition = 0;
-            bitUpdate(buffer, stream);
-        }
-        bitPosition++;
-        return buffer.getByte((byte)(bitPosition - 1));
-    }
-
-    static byte buildByte(byte[] bits)
-    {
-        StringBuilder sb = new StringBuilder();
-
-        foreach (var item in bits)
-        {
-            sb.Append(item.ToString());
-        }
-        return Convert.ToByte(sb.ToString(), 2);
-    }
-
     static void Main(String[] args)
     {
-        string compressedFilePath = "C:\\Users\\test\\Desktop\\first_screen";
-        string decompressedFilePath = "C:\\Users\\test\\Desktop\\out2.bin";
+        string gamePath = "C:\\Users\\test\\Desktop\\out_25159A";
+        string decompressedFilePath = "C:\\Users\\test\\Desktop\\out_g";
+        strToByte(codeGraphic(gamePath, decompressedFilePath));
+        //codeGraphic(gamePath, decompressedFilePath);
+        //decodeGraphic(args[0], args[1]);
+        //decodeGraphic(gamePath, decompressedFilePath);
+    }
+}
+/*
+ string compressedFilePath = "C:\\Users\\test\\Desktop\\extracting\\title";
+        string decompressedFilePath = "C:\\Users\\test\\Desktop\\extracting\\outt2.bin";
         CircularBuffer buffer = new CircularBuffer(0x100);
         CircularBuffer bitBuffer = new CircularBuffer(8);
 
@@ -88,5 +87,4 @@ class Program
                 }
             } while (decompStream.Position != decodedGraphicSize);
         }
-    }
-}
+*/

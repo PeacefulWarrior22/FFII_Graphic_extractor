@@ -9,52 +9,45 @@ class CircularBuffer
     public int size;
     public byte position;
     private byte[] buffer;
-    
-    public CircularBuffer(int bufferSize)
+
+    public CircularBuffer(int bufferSize, byte[] buffer)
     {
         size = bufferSize;
-        buffer = new byte[size];
-        position = 0;
-    }
-    private void positionUpdate()
-    {
-        if (position == size - 1)
-        {
-            position = 0;
-        }
-        else
-        {
-            position += 1;
-        }
+        this.buffer = buffer;
+        position = (byte)(bufferSize - 1);
     }
     public void addByte(byte data)
     {
+        for (int i = 0; i < size - 1; i++)
+        {
+            buffer[i] = buffer[i + 1];
+        }
         buffer[position] = data;
-        positionUpdate();
     }
 
-    public void byteRefresh(byte offset, byte length)
+    public void addSetFromStream(FileStream stream, int length)
     {
-        for (int i = 0; i < length; i++)
-        {
-            buffer[position] = buffer[offset - 1 + i];
-            positionUpdate();
+        byte[] reserv = new byte[length];
+        stream.Read(reserv, 0, length);
+        byteRefresh(reserv);
+    }
+    public void byteRefresh(byte[] array)
+    {
+        foreach (byte b in array) {
+            addByte(b);
         }
     }
-    public byte getByte(byte index)
+    public byte getByte()
     {
-        return buffer[index];
+        return buffer[0];
     }
-    public byte[] getSetBytes(byte offset, byte length)
+    public byte[] getSetBytes(byte length)
     {
-
         byte[] buffer = new byte[length];
         for (int i = 0; i < buffer.Length; i++)
         {
-            buffer[i] = this.buffer[(offset + i) % (size - 1)];
+            buffer[i] = this.buffer[i];
         }
-
         return buffer;
     }
 }
-
